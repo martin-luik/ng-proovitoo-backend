@@ -1,0 +1,35 @@
+#spring.application.name=events
+spring:
+  application:
+    name: events
+
+  jpa:
+    open-in-view: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5436/events_db?currentSchema=event_mgmt
+    username: events_adm_user
+    password: events_admin
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+
+  liquibase:
+    default-schema: event_mgmt
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+    enabled: true
+    liquibase-schema: liquibase
+
+server:
+  port: 8080
+
+app:
+  admin:
+    email: admin@example.com
+    # BCrypt-hash paroolist (näit "admin123"): genereeri ette (nt Spring util või bcrypt.online)
+    passwordHash: $2a$10$Lj6rOaIl2/insmKcXdrALelZdOFlMZb9ifahX.ukH2qs1aeP50rPK
+  jwt:
+    issuer: "events-app"
+    secret: "change-me-very-long-random-256-bit"
+    expiryMinutes: 60
+

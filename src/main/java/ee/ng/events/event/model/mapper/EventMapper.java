@@ -1,0 +1,21 @@
+package ee.ng.events.event.model.mapper;
+
+import ee.ng.events.event.model.dto.EventDto;
+import ee.ng.events.event.model.dto.GetEventResponse;
+import ee.ng.events.event.model.dto.PostEventRequest;
+import ee.ng.events.event.model.dto.PostEventResponse;
+import ee.ng.events.event.model.entity.EventEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
+import java.util.List;
+
+@Mapper
+public interface EventMapper {
+    EventMapper INSTANCE = Mappers.getMapper(EventMapper.class);
+
+    EventDto toEventDto(PostEventRequest postEventRequest);
+    EventEntity toEventEntity(EventDto eventDto);
+    PostEventResponse toPostEventResponse(EventEntity eventEntity);
+    List<GetEventResponse> toGetEventResponses(List<EventEntity> eventEntities);
+}
