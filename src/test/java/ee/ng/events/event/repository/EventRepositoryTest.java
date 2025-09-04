@@ -18,6 +18,7 @@ class EventRepositoryTest extends BaseRepositoryTest {
     @Autowired
     private EventRepository eventRepository;
 
+
     private EventEntity eventEntity;
 
     @BeforeEach
@@ -36,4 +37,16 @@ class EventRepositoryTest extends BaseRepositoryTest {
         assertEquals(eventEntity.getTitle(), savedEvent.getTitle());
     }
 
+    @Test
+    void findAllSummaries_withoutRegistrations() {
+        eventRepository.save(eventEntity);
+        var summaries = eventRepository.findAllSummaries();
+
+        assertEquals(1, summaries.size());
+        var summary = summaries.get(0);
+        assertEquals(eventEntity.getTitle(), summary.getTitle());
+        assertEquals(eventEntity.getCapacity(), summary.getCapacity());
+        assertEquals(0, summary.getRegistrationsCount());
+        assertEquals(eventEntity.getCapacity(), summary.getAvailableSeats());
+    }
 }

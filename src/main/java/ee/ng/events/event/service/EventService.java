@@ -3,6 +3,7 @@ package ee.ng.events.event.service;
 import ee.ng.events.event.model.dto.EventDto;
 import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.event.model.mapper.EventMapper;
+import ee.ng.events.event.model.projection.EventSummaryProjection;
 import ee.ng.events.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventEntity> getAll() {
-        return eventRepository.findAll();
+    public List<EventSummaryProjection> getAllSummaries() {
+        return eventRepository.findAllSummaries();
     }
 }

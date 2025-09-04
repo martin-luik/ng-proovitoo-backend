@@ -5,6 +5,7 @@ import ee.ng.events.event.model.dto.PostEventRequest;
 import ee.ng.events.event.model.dto.PostEventResponse;
 import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.event.model.mapper.EventMapper;
+import ee.ng.events.event.model.projection.EventSummaryProjection;
 import ee.ng.events.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class EventController {
 
     @GetMapping
     public ResponseEntity<List<GetEventResponse>> getAllEvents() {
-        List<EventEntity> eventEntities = eventService.getAll();
-        return ResponseEntity.ok(EventMapper.INSTANCE.toGetEventResponses(eventEntities));
+        List<EventSummaryProjection> eventSummaryProjections = eventService.getAllSummaries();
+        return ResponseEntity.ok(EventMapper.INSTANCE.toGetEventResponses(eventSummaryProjections));
     }
 }

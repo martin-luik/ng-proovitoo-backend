@@ -10,4 +10,6 @@ public class GetEventResponse {
     private String title;
     private LocalDateTime startAt;
     private Integer capacity;
+    private Long registrationsCount;
+    private Integer availableSeats;
 }

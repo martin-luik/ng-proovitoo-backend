@@ -51,3 +51,19 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('hashPassword', JavaExec) {
+    group = 'tools'
+    description = 'Generate a BCrypt hash for a given password'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'ee.ng.events.tools.PasswordHashTool'
+
+    if (project.hasProperty('pwd')) {
+        args project.property('pwd')
+    } else {
+        doFirst {
+            println "Usage: ./gradlew hashPassword -Ppwd=yourPassword"
+            throw new GradleException("Missing parameter: -Ppwd")
+        }
+    }
+}

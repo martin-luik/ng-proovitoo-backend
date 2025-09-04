@@ -1,12 +1,14 @@
 package ee.ng.events.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.ng.events.common.web.ErrorCode;
 import ee.ng.events.config.security.SecurityConfig;
 import ee.ng.events.event.model.dto.EventDto;
 import ee.ng.events.event.model.dto.PostEventRequest;
 import ee.ng.events.event.model.dto.PostEventResponse;
 import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.event.model.mapper.EventMapper;
+import ee.ng.events.event.model.projection.EventSummaryProjection;
 import ee.ng.events.event.service.EventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,8 +31,9 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(EventController.class)
 @Import(SecurityConfig.class)
@@ -81,9 +83,9 @@ class EventControllerTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)));
 
         mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_ERROR.name()))
                 .andExpect(jsonPath("$.message").value(containsString("title")));
     }
 
@@ -100,9 +102,9 @@ class EventControllerTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)));
 
         mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_ERROR.name()))
                 .andExpect(jsonPath("$.message").value(containsString("startAt")));
     }
 
@@ -119,9 +121,9 @@ class EventControllerTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)));
 
         mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_ERROR.name()))
                 .andExpect(jsonPath("$.message").value(containsString("capacity")));
     }
 
@@ -144,7 +146,7 @@ class EventControllerTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority(ROLE_ADMIN)));
 
         mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(postEventResponse.getTitle()))
                 .andExpect(jsonPath("$.startAt").value(postEventResponse.getStartAt().toString()))
                 .andExpect(jsonPath("$.capacity").value(postEventResponse.getCapacity()));
@@ -152,25 +154,28 @@ class EventControllerTest {
 
     @Test
     void getAllEvents() throws Exception {
-        EventEntity eventEntity = new EventEntity();
-        eventEntity.setId(1L);
-        eventEntity.setTitle("Sample Event");
-        eventEntity.setStartAt(LocalDateTime.parse("2024-12-31T23:59:59"));
-        eventEntity.setCapacity(100);
+        EventSummaryProjection eventSummaryProjection = mock(EventSummaryProjection.class);
+        doReturn(1L).when(eventSummaryProjection).getId();
+        doReturn("Sample Event").when(eventSummaryProjection).getTitle();
+        doReturn(LocalDateTime.parse("2024-12-31T23:59:59")).when(eventSummaryProjection).getStartAt();
+        doReturn(1).when(eventSummaryProjection).getCapacity();
+        doReturn(1L).when(eventSummaryProjection).getRegistrationsCount();
+        doReturn(1).when(eventSummaryProjection).getAvailableSeats();
 
-        doReturn(List.of(eventEntity)).when(eventService).getAll();
+        var expected = EventMapper.INSTANCE.toGetEventResponses(List.of(eventSummaryProjection));
+        var expectedJson = objectMapper.writeValueAsString(expected);
+
+        doReturn(List.of(eventSummaryProjection)).when(eventService).getAllSummaries();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/v1/events")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(eventEntity.getId()))
-                .andExpect(jsonPath("$[0].title").value(eventEntity.getTitle()))
-                .andExpect(jsonPath("$[0].startAt").value(eventEntity.getStartAt().toString()))
-                .andExpect(jsonPath("$[0].capacity").value(eventEntity.getCapacity()));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expectedJson));
     }
 }

@@ -25,7 +25,7 @@ class RegistrationRepositoryTest extends BaseRepositoryTest {
     private EventEntity eventEntity;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         eventEntity = new EventEntity();
         eventEntity.setCapacity(2);
         eventEntity.setTitle("Test Event");

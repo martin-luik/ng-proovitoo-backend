@@ -5,6 +5,7 @@ import ee.ng.events.event.model.dto.GetEventResponse;
 import ee.ng.events.event.model.dto.PostEventRequest;
 import ee.ng.events.event.model.dto.PostEventResponse;
 import ee.ng.events.event.model.entity.EventEntity;
+import ee.ng.events.event.model.projection.EventSummaryProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -17,5 +18,5 @@ public interface EventMapper {
     EventDto toEventDto(PostEventRequest postEventRequest);
     EventEntity toEventEntity(EventDto eventDto);
     PostEventResponse toPostEventResponse(EventEntity eventEntity);
-    List<GetEventResponse> toGetEventResponses(List<EventEntity> eventEntities);
+    List<GetEventResponse> toGetEventResponses(List<EventSummaryProjection> eventSummaryProjections);
 }
