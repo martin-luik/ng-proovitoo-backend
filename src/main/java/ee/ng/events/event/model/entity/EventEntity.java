@@ -14,10 +14,10 @@ public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "title", nullable = false)
-    private String title;
-    @Column(name = "start_at", nullable = false)
-    private LocalDateTime startAt;
+    @Column(name = "name", nullable = false)
+    private String name;
+    @Column(name = "starts_at", nullable = false)
+    private LocalDateTime startsAt;
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
     @Column(

@@ -32,8 +32,8 @@ class EventServiceTest {
     @Test
     void save() {
         EventDto eventDto = new EventDto();
-        eventDto.setTitle("Sample Event");
-        eventDto.setStartAt(LocalDateTime.parse("2024-12-31T23:59:59"));
+        eventDto.setName("Sample Event");
+        eventDto.setStartsAt(LocalDateTime.parse("2024-12-31T23:59:59"));
         eventDto.setCapacity(100);
 
         EventEntity eventEntity = EventMapper.INSTANCE.toEventEntity(eventDto);

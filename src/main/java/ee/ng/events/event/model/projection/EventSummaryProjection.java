@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 public interface EventSummaryProjection {
     Long getId();
 
-    String getTitle();
+    String getName();
 
-    LocalDateTime getStartAt();
+    LocalDateTime getStartsAt();
 
     int getCapacity();
 

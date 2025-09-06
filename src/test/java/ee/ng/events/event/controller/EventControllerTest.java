@@ -55,8 +55,8 @@ class EventControllerTest {
     @BeforeEach
     void setUp() {
         postEventRequest = new PostEventRequest();
-        postEventRequest.setTitle("Sample Event");
-        postEventRequest.setStartAt(LocalDateTime.parse("2024-12-31T23:59:59"));
+        postEventRequest.setName("Sample Event");
+        postEventRequest.setStartsAt(LocalDateTime.parse("2024-12-31T23:59:59"));
         postEventRequest.setCapacity(100);
     }
 
@@ -71,8 +71,8 @@ class EventControllerTest {
 
     @ParameterizedTest
     @MethodSource("blankValues")
-    void postExResult_titleIsBlank(String title) throws Exception {
-        postEventRequest.setTitle(title);
+    void postExResult_titleIsBlank(String name) throws Exception {
+        postEventRequest.setName(name);
 
         var query = objectMapper.writeValueAsString(postEventRequest);
 
@@ -86,12 +86,12 @@ class EventControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.message").value(containsString("title")));
+                .andExpect(jsonPath("$.message").value(containsString("name")));
     }
 
     @Test
-    void postExResult_startAtIsNull() throws Exception {
-        postEventRequest.setStartAt(null);
+    void postExResult_startsAtIsNull() throws Exception {
+        postEventRequest.setStartsAt(null);
 
         var query = objectMapper.writeValueAsString(postEventRequest);
 
@@ -105,7 +105,7 @@ class EventControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.message").value(containsString("startAt")));
+                .andExpect(jsonPath("$.message").value(containsString("startsAt")));
     }
 
     @Test
@@ -147,8 +147,8 @@ class EventControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(postEventResponse.getTitle()))
-                .andExpect(jsonPath("$.startAt").value(postEventResponse.getStartAt().toString()))
+                .andExpect(jsonPath("$.name").value(postEventResponse.getName()))
+                .andExpect(jsonPath("$.startsAt").value(postEventResponse.getStartsAt().toString()))
                 .andExpect(jsonPath("$.capacity").value(postEventResponse.getCapacity()));
     }
 
@@ -156,8 +156,8 @@ class EventControllerTest {
     void getAllEvents() throws Exception {
         EventSummaryProjection eventSummaryProjection = mock(EventSummaryProjection.class);
         doReturn(1L).when(eventSummaryProjection).getId();
-        doReturn("Sample Event").when(eventSummaryProjection).getTitle();
-        doReturn(LocalDateTime.parse("2024-12-31T23:59:59")).when(eventSummaryProjection).getStartAt();
+        doReturn("Sample Event").when(eventSummaryProjection).getName();
+        doReturn(LocalDateTime.parse("2024-12-31T23:59:59")).when(eventSummaryProjection).getStartsAt();
         doReturn(1).when(eventSummaryProjection).getCapacity();
         doReturn(1L).when(eventSummaryProjection).getRegistrationsCount();
         doReturn(1).when(eventSummaryProjection).getAvailableSeats();

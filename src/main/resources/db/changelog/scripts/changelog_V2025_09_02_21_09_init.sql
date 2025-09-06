@@ -1,8 +1,8 @@
 CREATE TABLE event_mgmt.events
 (
     id         BIGSERIAL PRIMARY KEY,
-    title      TEXT                     NOT NULL,
-    start_at   TIMESTAMP WITH TIME ZONE NOT NULL,
+    name       TEXT                     NOT NULL,
+    starts_at  TIMESTAMP WITH TIME ZONE NOT NULL,
     capacity   INTEGER                  NOT NULL CHECK (capacity > 0),
     created_at timestamp with time zone default CURRENT_TIMESTAMP
 );

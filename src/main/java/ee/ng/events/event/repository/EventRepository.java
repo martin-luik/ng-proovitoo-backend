@@ -12,11 +12,11 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     @Query("""
-              SELECT e.id as id, e.title as title, e.startAt as startAt, e.capacity as capacity,
+              SELECT e.id as id, e.name as name, e.startsAt as startsAt, e.capacity as capacity,
                      count(r.id) as registrationsCount
               FROM EventEntity e
               LEFT JOIN RegistrationEntity r on r.eventEntity.id = e.id
-              GROUP BY e.id, e.title, e.startAt, e.capacity ORDER BY e.id DESC
+              GROUP BY e.id, e.name, e.startsAt, e.capacity ORDER BY e.id DESC
             """)
     List<EventSummaryProjection> findAllSummaries();
 

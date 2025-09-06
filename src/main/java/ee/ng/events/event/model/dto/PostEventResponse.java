@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class PostEventResponse {
-    private String title;
-    private LocalDateTime startAt;
+    private String name;
+    private LocalDateTime startsAt;
     private Integer capacity;
 }

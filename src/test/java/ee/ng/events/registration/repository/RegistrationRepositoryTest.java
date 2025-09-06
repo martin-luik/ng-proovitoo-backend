@@ -28,8 +28,8 @@ class RegistrationRepositoryTest extends BaseRepositoryTest {
     void setup() {
         eventEntity = new EventEntity();
         eventEntity.setCapacity(2);
-        eventEntity.setTitle("Test Event");
-        eventEntity.setStartAt(LocalDateTime.now());
+        eventEntity.setName("Test Event");
+        eventEntity.setStartsAt(LocalDateTime.now());
         eventEntity.setCreatedAt(LocalDateTime.now());
         eventEntity = eventRepository.save(eventEntity);
     }

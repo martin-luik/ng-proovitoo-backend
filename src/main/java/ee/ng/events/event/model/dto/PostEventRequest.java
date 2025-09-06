@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 public class PostEventRequest {
     @NotNull
     @NotBlank
-    private String title;
+    private String name;
     @NotNull
-    private LocalDateTime startAt;
+    private LocalDateTime startsAt;
     @NotNull
     private Integer capacity;
 }

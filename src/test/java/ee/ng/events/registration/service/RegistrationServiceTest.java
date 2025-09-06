@@ -59,7 +59,7 @@ class RegistrationServiceTest {
 
         EventEntity eventEntity = new EventEntity();
         eventEntity.setId(1L);
-        eventEntity.setTitle("Sample Event");
+        eventEntity.setName("Sample Event");
         eventEntity.setCapacity(1);
 
         RegistrationEntity registrationEntity = new RegistrationEntity();
@@ -80,7 +80,7 @@ class RegistrationServiceTest {
 
         EventEntity eventEntity = new EventEntity();
         eventEntity.setId(1L);
-        eventEntity.setTitle("Sample Event");
+        eventEntity.setName("Sample Event");
         eventEntity.setCapacity(2);
 
         RegistrationEntity registrationEntity = new RegistrationEntity();
@@ -104,7 +104,7 @@ class RegistrationServiceTest {
 
         EventEntity eventEntity = new EventEntity();
         eventEntity.setId(1L);
-        eventEntity.setTitle("Sample Event");
+        eventEntity.setName("Sample Event");
         eventEntity.setCapacity(2);
 
         RegistrationEntity registrationEntity = new RegistrationEntity();
