@@ -33,3 +33,21 @@ app:
     secret: "change-me-very-long-random-256-bit"
     expiryMinutes: 60
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info,metrics'
+  endpoint:
+    health:
+      show-details: always
+
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /index.html
+

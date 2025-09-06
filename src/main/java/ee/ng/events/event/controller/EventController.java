@@ -7,9 +7,11 @@ import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.event.model.mapper.EventMapper;
 import ee.ng.events.event.model.projection.EventSummaryProjection;
 import ee.ng.events.event.service.EventService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,8 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<PostEventResponse> postEvent(@Valid @RequestBody PostEventRequest postEventRequest) {
         EventEntity eventEntity = eventService.save(EventMapper.INSTANCE.toEventDto(postEventRequest));
         return ResponseEntity.ok(EventMapper.INSTANCE.toPostEventResponse(eventEntity));

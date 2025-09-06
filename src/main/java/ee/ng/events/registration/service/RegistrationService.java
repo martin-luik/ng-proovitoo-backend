@@ -7,6 +7,7 @@ import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.event.repository.EventRepository;
 import ee.ng.events.registration.model.dto.RegistrationDto;
 import ee.ng.events.registration.model.entity.RegistrationEntity;
+import ee.ng.events.registration.model.mapper.RegistrationMapper;
 import ee.ng.events.registration.repository.RegistrationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,6 @@ public class RegistrationService {
 
     @Transactional
     public RegistrationEntity save(RegistrationDto registrationDto) {
-        RegistrationEntity registrationEntity = new RegistrationEntity();
-
         EventEntity eventEntity = eventRepository
                 .findById(registrationDto.getEventId())
                 .orElseThrow(() -> new EventNotFoundException(registrationDto.getEventId()));
@@ -35,10 +34,7 @@ public class RegistrationService {
             throw new AlreadyRegisteredException(registrationDto.getEventId());
         }
 
-        registrationEntity.setEventEntity(eventEntity);
-        registrationEntity.setFirstName(registrationDto.getFirstName());
-        registrationEntity.setLastName(registrationDto.getLastName());
-        registrationEntity.setPersonalCode(registrationDto.getPersonalCode());
+        RegistrationEntity registrationEntity = RegistrationMapper.INSTANCE.toRegistrationEntity(registrationDto, eventEntity);
 
         return registrationRepository.save(registrationEntity);
     }
