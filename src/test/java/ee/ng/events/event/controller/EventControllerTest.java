@@ -71,7 +71,7 @@ class EventControllerTest {
 
     @ParameterizedTest
     @MethodSource("blankValues")
-    void postExResult_titleIsBlank(String name) throws Exception {
+    void postEvent_nameIsBlank(String name) throws Exception {
         postEventRequest.setName(name);
 
         var query = objectMapper.writeValueAsString(postEventRequest);
@@ -90,7 +90,7 @@ class EventControllerTest {
     }
 
     @Test
-    void postExResult_startsAtIsNull() throws Exception {
+    void postEvent_startsAtIsNull() throws Exception {
         postEventRequest.setStartsAt(null);
 
         var query = objectMapper.writeValueAsString(postEventRequest);
@@ -109,7 +109,7 @@ class EventControllerTest {
     }
 
     @Test
-    void postExResult_capacityIsNull() throws Exception {
+    void postEvent_capacityIsNull() throws Exception {
         postEventRequest.setCapacity(null);
 
         var query = objectMapper.writeValueAsString(postEventRequest);
