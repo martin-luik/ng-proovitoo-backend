@@ -35,7 +35,7 @@ public class GlobalRestExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getFieldErrors().stream()
-                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .findFirst().orElse("Validation error");
         return ResponseEntity.badRequest().body(new ApiError(ErrorCode.VALIDATION_ERROR, msg));
     }

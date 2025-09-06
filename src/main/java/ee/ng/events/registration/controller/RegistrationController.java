@@ -19,7 +19,7 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @PostMapping
-    public ResponseEntity<PostRegistrationResponse> registerForEvent(
+    public ResponseEntity<PostRegistrationResponse> postRegistration(
             @PathVariable("eventId") Long eventId,
             @Valid @RequestBody PostRegistrationRequest postRegistrationRequest
     ) {
