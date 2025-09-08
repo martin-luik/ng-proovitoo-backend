@@ -135,7 +135,7 @@ Run tests:
 
 The project uses **Liquibase** to manage database schema changes.
 
-- Changesets are defined under `src/main/resources/db.changelog/`.
+- Changesets are defined under `src/main/resources/db/changelog/`.
 - For the initial schema, a SQL-based changeset is used (`changelog_V2025_09_02_21_09_init.sql`).
 - The master file (`db.changelog-master.xml`) includes all changesets.
 
