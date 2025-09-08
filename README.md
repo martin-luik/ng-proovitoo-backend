@@ -131,6 +131,17 @@ Run tests:
 ```
 
 ---
+## 📦 Database Migrations
+
+The project uses **Liquibase** to manage database schema changes.
+
+- Changesets are defined under `src/main/resources/db.changelog/`.
+- For the initial schema, a SQL-based changeset is used (`changelog_V2025_09_02_21_09_init.sql`).
+- The master file (`db.changelog-master.xml`) includes all changesets.
+
+👉 In production, schema updates would be added as new incremental changesets (instead of editing the initial one).  
+Rollback scripts could also be added if needed.
+---
 
 ## 📝 Project Notes
 
