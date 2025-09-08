@@ -16,6 +16,7 @@ import java.util.List;
 public interface EventMapper {
     EventMapper INSTANCE = Mappers.getMapper(EventMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     EventDto toEventDto(PostEventRequest postEventRequest);
 
     @Mapping(target = "id", ignore = true)

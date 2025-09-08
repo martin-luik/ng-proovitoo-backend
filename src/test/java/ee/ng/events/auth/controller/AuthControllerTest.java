@@ -5,7 +5,7 @@ import ee.ng.events.auth.model.dto.PostAuthRequest;
 import ee.ng.events.auth.service.AuthService;
 import ee.ng.events.config.CookieConfig;
 import ee.ng.events.config.JwtConfig;
-import ee.ng.events.config.security.SecurityConfig;
+import ee.ng.events.config.SecurityConfig;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

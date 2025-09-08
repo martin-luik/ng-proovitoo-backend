@@ -1,7 +1,5 @@
-package ee.ng.events.config.security;
+package ee.ng.events.config;
 
-import ee.ng.events.config.CookieConfig;
-import ee.ng.events.config.JwtConfig;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.ng.events.common.web.ErrorCode;
 import ee.ng.events.config.CookieConfig;
 import ee.ng.events.config.JwtConfig;
-import ee.ng.events.config.security.SecurityConfig;
+import ee.ng.events.config.SecurityConfig;
 import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.registration.model.dto.PostRegistrationRequest;
 import ee.ng.events.registration.model.dto.RegistrationDto;
