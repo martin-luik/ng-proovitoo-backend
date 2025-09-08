@@ -13,10 +13,15 @@ import org.mapstruct.factory.Mappers;
 public interface RegistrationMapper {
     RegistrationMapper INSTANCE = Mappers.getMapper(RegistrationMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "eventId", source = "eventId")
+    @Mapping(target = "firstName", source = "postRegistrationRequest.firstName")
+    @Mapping(target = "lastName", source = "postRegistrationRequest.lastName")
+    @Mapping(target = "personalCode", source = "postRegistrationRequest.personalCode")
     RegistrationDto toRegistrationDto(Long eventId, PostRegistrationRequest postRegistrationRequest);
 
-    PostRegistrationResponse toPostRegistrationResponse(RegistrationEntity registrationEntity);
+    @Mapping(target = "eventId", source = "eventEntity.id")
+    PostRegistrationResponse toPostRegistrationResponse(RegistrationEntity entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

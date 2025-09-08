@@ -5,6 +5,7 @@ import ee.ng.events.common.web.ErrorCode;
 import ee.ng.events.config.CookieConfig;
 import ee.ng.events.config.JwtConfig;
 import ee.ng.events.config.security.SecurityConfig;
+import ee.ng.events.event.model.entity.EventEntity;
 import ee.ng.events.registration.model.dto.PostRegistrationRequest;
 import ee.ng.events.registration.model.dto.RegistrationDto;
 import ee.ng.events.registration.model.entity.RegistrationEntity;
@@ -147,11 +148,17 @@ class RegistrationControllerTest {
 
     @Test
     void postRegistration_success() throws Exception {
-        RegistrationDto registrationDto = RegistrationMapper.INSTANCE.toRegistrationDto(1L, postRegistrationRequest);
+        Long eventId = 1L;
+
+        RegistrationDto registrationDto = RegistrationMapper.INSTANCE.toRegistrationDto(eventId, postRegistrationRequest);
         RegistrationEntity registrationEntity = new RegistrationEntity();
         registrationEntity.setPersonalCode(postRegistrationRequest.getPersonalCode());
         registrationEntity.setFirstName(postRegistrationRequest.getFirstName());
         registrationEntity.setLastName(postRegistrationRequest.getLastName());
+
+        EventEntity eventEntity = new EventEntity();
+        eventEntity.setId(eventId);
+        registrationEntity.setEventEntity(eventEntity);
 
         var query = objectMapper.writeValueAsString(postRegistrationRequest);
 
@@ -164,8 +171,7 @@ class RegistrationControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.personalCode").value(registrationEntity.getPersonalCode()))
-                .andExpect(jsonPath("$.firstName").value(registrationEntity.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(containsString(registrationEntity.getLastName())));
+                .andExpect(jsonPath("$.id").value(registrationEntity.getId()))
+                .andExpect(jsonPath("$.eventId").value(registrationEntity.getEventEntity().getId()));
     }
 }

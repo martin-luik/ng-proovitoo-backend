@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class PostRegistrationResponse {
-    private String firstName;
-    private String lastName;
-    private String personalCode;
+    private Long id;
+    private Long eventId;
 }

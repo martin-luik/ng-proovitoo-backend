@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class RegistrationDto {
+    private Long id;
     private Long eventId;
     private String firstName;
     private String lastName;
