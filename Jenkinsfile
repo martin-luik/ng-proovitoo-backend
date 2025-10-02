@@ -3,7 +3,7 @@ pipeline {
   options { timestamps() }
 
   environment {
-    REGISTRY = "localhost:5000"
+    REGISTRY = "localhost:5001"
     IMAGE    = "ng-proovitoo-backend"
     VERSION  = "${env.BUILD_NUMBER}"
   }
