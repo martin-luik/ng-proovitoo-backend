@@ -13,8 +13,10 @@ pipeline {
       agent {
         docker {
           image 'gradle:8.10.2-jdk21'
-          args '-v $HOME/.gradle:/home/gradle/.gradle'
         }
+      }
+      environment {
+        GRADLE_USER_HOME = "${WORKSPACE}/.gradle" 
       }
       steps {
         sh 'chmod +x gradlew || true'
