@@ -1,0 +1,31 @@
+namespace: ng-events
+
+image:
+  repository: host.docker.internal:5001/ng-proovitoo-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+imagePullSecrets:
+  - name: nexus-regcred
+
+replicaCount: 1
+containerPort: 8080
+
+envFrom:
+  configMapRef: ng-events-backend-config
+  secretRef: ng-events-backend-secrets
+
+service:
+  port: 80
+  targetPort: 8080
+
+probes:
+  readinessPath: /actuator/health
+  livenessPath: /actuator/health
+  initialReadinessDelay: 10
+  initialLivenessDelay: 30
+
+ingress:
+  enabled: false          
+  ingressClassName: nginx
+  host: ""                
+  apiPrefix: /api/?(.*)          
