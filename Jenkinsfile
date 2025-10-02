@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+    docker { 
+      image 'gradle:8.10.2-jdk21'  
+      args '-v $HOME/.gradle:/home/gradle/.gradle' 
+    }
+  }
 
   environment {
     REGISTRY = "host.docker.internal:5001"               
