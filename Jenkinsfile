@@ -53,17 +53,16 @@ pipeline {
         withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KCFG')]) {
           sh '''
             CHART_DIR="helm"
-
             docker run --rm \
-              -e KUBECONFIG=/kubeconfig \
-              -v "$KCFG":/kubeconfig:ro \
+              -v "$KCFG":/tmp/kubeconfig:ro \
               -v "$PWD/${CHART_DIR}":/chart \
               dtzar/helm-kubectl:3.14.4 \
-              sh -c 'cd /chart && \
+              sh -c 'mkdir -p /root/.kube && cp /tmp/kubeconfig /root/.kube/config && chmod 600 /root/.kube/config && \
+                     cd /chart && \
                      helm upgrade --install ng-events . \
                        --namespace ng-events --create-namespace \
                        --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
-                       --set image.tag='${TAG_SHA:-latest}' \
+                       --set image.tag=${TAG_SHA:-latest} \
                        --wait --atomic --timeout 5m'
           '''
         }
