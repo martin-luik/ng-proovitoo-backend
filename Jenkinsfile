@@ -50,7 +50,7 @@ pipeline {
 
     stage('Deploy (Helm)') {
       agent {
-        docker { image 'dtzar/helm-kubectl:3.14.4' }
+        docker { image 'dtzar/helm-kubectl:3.14.4' } 
       }
       steps {
         script {
@@ -61,16 +61,29 @@ pipeline {
         withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KCFG')]) {
           sh '''
             set -euo pipefail
-            CHART_DIR="helm"
 
+            # kubeconfig tööle
             cp "$KCFG" ./kubeconfig
             chmod 600 ./kubeconfig
             export KUBECONFIG="$PWD/kubeconfig"
 
-            kubectl config view --minify || true
+            # leia charti kaust
+            if [ -f helm/Chart.yaml ]; then
+              CHART_DIR="helm"
+            elif [ -f charts/backend/Chart.yaml ]; then
+              CHART_DIR="charts/backend"
+            elif [ -f Chart.yaml ]; then
+              CHART_DIR="."
+            else
+              echo "❌ Helm chart not found (looked in ./helm, ./charts/backend, ./)"
+              ls -la
+              exit 2
+            fi
+            echo "Using CHART_DIR=$CHART_DIR"
 
-            cd "$CHART_DIR"
-            helm upgrade --install ng-events . \
+            helm dependency build "$CHART_DIR" || true
+
+            helm upgrade --install ng-events "$CHART_DIR" \
               --namespace ng-events --create-namespace \
               --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
               --set image.tag=${TAG_SHA:-latest} \
