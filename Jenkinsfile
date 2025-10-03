@@ -49,6 +49,9 @@ pipeline {
     }
 
     stage('Deploy (Helm)') {
+      agent {
+        docker { image 'dtzar/helm-kubectl:3.14.4' }
+      }
       steps {
         script {
           if (!env.TAG_SHA?.trim()) {
@@ -57,25 +60,21 @@ pipeline {
         }
         withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KCFG')]) {
           sh '''
+            set -euo pipefail
             CHART_DIR="helm"
 
-            cp "$KCFG" "$WORKSPACE/kubeconfig"
-            chmod 600 "$WORKSPACE/kubeconfig"
+            cp "$KCFG" ./kubeconfig
+            chmod 600 ./kubeconfig
+            export KUBECONFIG="$PWD/kubeconfig"
 
-            docker run --rm \
-              -e KUBECONFIG=/kube/config \
-              -v "$WORKSPACE/kubeconfig":/kube/config:ro \
-              -v "$PWD/${CHART_DIR}":/chart \
-              dtzar/helm-kubectl:3.14.4 \
-              sh -c 'set -euo pipefail; \
-                     ls -l /kube; echo "---"; \
-                     kubectl config view --minify || true; echo "---"; \
-                     cd /chart && \
-                     helm upgrade --install ng-events . \
-                       --namespace ng-events --create-namespace \
-                       --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
-                       --set image.tag='${TAG_SHA:-latest}' \
-                       --wait --atomic --timeout 5m'
+            kubectl config view --minify || true
+
+            cd "$CHART_DIR"
+            helm upgrade --install ng-events . \
+              --namespace ng-events --create-namespace \
+              --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
+              --set image.tag=${TAG_SHA:-latest} \
+              --wait --atomic --timeout 5m
           '''
         }
       }
