@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ng-events-deployment
+  namespace: ng-events
+  labels:
+    app: ng-events-backend
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: ng-events-backend
+  template:
+    metadata:
+      labels:
+        app: ng-events-backend
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - containerPort: {{ .Values.containerPort | default 8080 }}
+          {{- if or .Values.envFrom.configMapRef .Values.envFrom.secretRef }}
+          envFrom:
+            {{- if .Values.envFrom.configMapRef }}
+            - configMapRef:
+                name: {{ .Values.envFrom.configMapRef }}
+            {{- end }}
+            {{- if .Values.envFrom.secretRef }}
+            - secretRef:
+                name: {{ .Values.envFrom.secretRef }}
+            {{- end }}
+          {{- end }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readinessPath | default "/actuator/health" | quote }}
+              port: {{ .Values.containerPort | default 8080 }}
+            initialDelaySeconds: {{ .Values.probes.initialReadinessDelay | default 10 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.livenessPath | default "/actuator/health" | quote }}
+              port: {{ .Values.containerPort | default 8080 }}
+            initialDelaySeconds: {{ .Values.probes.initialLivenessDelay | default 30 }}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      terminationGracePeriodSeconds: 30
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
