@@ -52,7 +52,7 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KUBECONFIG')]) {
           sh '''
-            CHART_DIR="charts/backend"
+            CHART_DIR="helm"
 
             docker run --rm \
               -v "$KUBECONFIG":/root/.kube/config \
