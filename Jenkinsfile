@@ -47,6 +47,27 @@ pipeline {
         always { sh 'docker logout ${REGISTRY} || true' }
       }
     }
+
+    stage('Deploy (Helm)') {
+      steps {
+        withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KUBECONFIG')]) {
+          sh '''
+            CHART_DIR="charts/backend"
+
+            docker run --rm \
+              -v "$KUBECONFIG":/root/.kube/config \
+              -v "$PWD/${CHART_DIR}":/chart \
+              dtzar/helm-kubectl:3.14.4 \
+              sh -c 'cd /chart && \
+                     helm upgrade --install ng-events . \
+                       --namespace ng-events --create-namespace \
+                       --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
+                       --set image.tag='${TAG_SHA}'
+              '
+          '''
+        }
+      }
+    }
   }
 
   post {
