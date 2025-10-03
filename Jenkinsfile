@@ -51,7 +51,6 @@ pipeline {
     stage('Deploy (Helm)') {
       steps {
         script {
-          // tag on alati olemas
           if (!env.TAG_SHA?.trim()) {
             env.TAG_SHA = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
           }
@@ -64,10 +63,14 @@ pipeline {
             chmod 600 "$WORKSPACE/kubeconfig"
 
             docker run --rm \
-              -v "$WORKSPACE/kubeconfig":/root/.kube/config:ro \
+              -e KUBECONFIG=/kube/config \
+              -v "$WORKSPACE/kubeconfig":/kube/config:ro \
               -v "$PWD/${CHART_DIR}":/chart \
               dtzar/helm-kubectl:3.14.4 \
-              sh -c 'cd /chart && \
+              sh -c 'set -euo pipefail; \
+                     ls -l /kube; echo "---"; \
+                     kubectl config view --minify || true; echo "---"; \
+                     cd /chart && \
                      helm upgrade --install ng-events . \
                        --namespace ng-events --create-namespace \
                        --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
