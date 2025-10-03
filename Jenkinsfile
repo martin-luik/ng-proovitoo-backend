@@ -50,7 +50,7 @@ pipeline {
 
     stage('Deploy (Helm)') {
       agent {
-        docker { image 'dtzar/helm-kubectl:3.14.4' } 
+        docker { image 'dtzar/helm-kubectl:3.14.4' }
       }
       steps {
         script {
@@ -65,24 +65,20 @@ pipeline {
             # kubeconfig tööle
             cp "$KCFG" ./kubeconfig
             chmod 600 ./kubeconfig
+
+            if grep -q "https://127.0.0.1:6443" ./kubeconfig; then
+              sed -i 's#https://127.0.0.1:6443#https://kubernetes.docker.internal:6443#g' ./kubeconfig
+            fi
+
             export KUBECONFIG="$PWD/kubeconfig"
 
-            # leia charti kaust
-            if [ -f helm/Chart.yaml ]; then
-              CHART_DIR="helm"
-            elif [ -f charts/backend/Chart.yaml ]; then
-              CHART_DIR="charts/backend"
-            elif [ -f Chart.yaml ]; then
-              CHART_DIR="."
-            else
-              echo "❌ Helm chart not found (looked in ./helm, ./charts/backend, ./)"
-              ls -la
-              exit 2
-            fi
-            echo "Using CHART_DIR=$CHART_DIR"
+            kubectl config view --minify
+            kubectl cluster-info
 
-            helm dependency build "$CHART_DIR" || true
+            CHART_DIR="helm"
+            [ -f "$CHART_DIR/Chart.yaml" ] || { echo "Chart not found in $CHART_DIR"; exit 2; }
 
+            # helm deploy
             helm upgrade --install ng-events "$CHART_DIR" \
               --namespace ng-events --create-namespace \
               --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
