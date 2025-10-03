@@ -50,20 +50,21 @@ pipeline {
 
     stage('Deploy (Helm)') {
       steps {
-        withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KUBECONFIG')]) {
+        withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KCFG')]) {
           sh '''
             CHART_DIR="helm"
 
             docker run --rm \
-              -v "$KUBECONFIG":/root/.kube/config \
+              -e KUBECONFIG=/kubeconfig \
+              -v "$KCFG":/kubeconfig:ro \
               -v "$PWD/${CHART_DIR}":/chart \
               dtzar/helm-kubectl:3.14.4 \
               sh -c 'cd /chart && \
                      helm upgrade --install ng-events . \
                        --namespace ng-events --create-namespace \
                        --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
-                       --set image.tag='${TAG_SHA}'
-              '
+                       --set image.tag='${TAG_SHA:-latest}' \
+                       --wait --atomic --timeout 5m'
           '''
         }
       }
