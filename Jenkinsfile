@@ -50,19 +50,28 @@ pipeline {
 
     stage('Deploy (Helm)') {
       steps {
+        script {
+          // tag on alati olemas
+          if (!env.TAG_SHA?.trim()) {
+            env.TAG_SHA = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+          }
+        }
         withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KCFG')]) {
           sh '''
             CHART_DIR="helm"
+
+            cp "$KCFG" "$WORKSPACE/kubeconfig"
+            chmod 600 "$WORKSPACE/kubeconfig"
+
             docker run --rm \
-              -v "$KCFG":/tmp/kubeconfig:ro \
+              -v "$WORKSPACE/kubeconfig":/root/.kube/config:ro \
               -v "$PWD/${CHART_DIR}":/chart \
               dtzar/helm-kubectl:3.14.4 \
-              sh -c 'mkdir -p /root/.kube && cp /tmp/kubeconfig /root/.kube/config && chmod 600 /root/.kube/config && \
-                     cd /chart && \
+              sh -c 'cd /chart && \
                      helm upgrade --install ng-events . \
                        --namespace ng-events --create-namespace \
                        --set image.repository=host.docker.internal:5001/ng-proovitoo-backend \
-                       --set image.tag=${TAG_SHA:-latest} \
+                       --set image.tag='${TAG_SHA:-latest}' \
                        --wait --atomic --timeout 5m'
           '''
         }
