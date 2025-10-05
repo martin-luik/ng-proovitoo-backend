@@ -49,7 +49,7 @@ pipeline {
     }
 
     stage('Helm package & upload (hosted)') {
-      agent { docker { image 'host.docker.internal:5001/devops/kubectl-helm:3.14.4-1' } }
+      agent { docker { image 'host.docker.internal:5001/devops/kubectl-helm:3.19.0' } }
       environment {
         CHART_DIR     = 'helm'
         CHART_VERSION = "0.1.${env.BUILD_NUMBER}"
@@ -87,7 +87,7 @@ pipeline {
     stage('Deploy (Helm)') {
       agent {
         docker {
-          image 'host.docker.internal:5001/devops/kubectl-helm:3.14.4-1'
+          image 'host.docker.internal:5001/devops/kubectl-helm:3.19.0'
         }
       }
       environment {
