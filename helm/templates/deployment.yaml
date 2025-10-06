@@ -14,24 +14,38 @@ spec:
     metadata:
       labels:
         app: ng-events-backend
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "ng-backend-dev"
+        vault.hashicorp.com/service: "http://host.docker.internal:8200"
+        vault.hashicorp.com/auth-path: "auth/kubernetes"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+        vault.hashicorp.com/agent-inject-secret-config.properties: "kv/data/ng-events/backend"
+        vault.hashicorp.com/agent-inject-template-config.properties: |
+          {{`{{- with secret "kv/data/ng-events/backend" -}}`}}
+          SPRING_DATASOURCE_USERNAME={{`{{ .Data.data.SPRING_DATASOURCE_USERNAME }}`}}
+          SPRING_DATASOURCE_PASSWORD={{`{{ .Data.data.SPRING_DATASOURCE_PASSWORD }}`}}
+          APP_JWT_SECRET={{`{{ .Data.data.APP_JWT_SECRET }}`}}
+          {{`{{- end }}`}}
     spec:
+      automountServiceAccountToken: true
+      serviceAccountName: default
       containers:
         - name: backend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - containerPort: {{ .Values.containerPort | default 8080 }}
-          {{- if or .Values.envFrom.configMapRef .Values.envFrom.secretRef }}
+          {{- if .Values.envFrom.configMapRef }}
           envFrom:
             {{- if .Values.envFrom.configMapRef }}
             - configMapRef:
                 name: {{ .Values.envFrom.configMapRef }}
             {{- end }}
-            {{- if .Values.envFrom.secretRef }}
-            - secretRef:
-                name: {{ .Values.envFrom.secretRef }}
-            {{- end }}
           {{- end }}
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:file:/vault/secrets/config.properties"
           readinessProbe:
             httpGet:
               path: {{ .Values.probes.readinessPath | default "/actuator/health" | quote }}
@@ -43,12 +57,8 @@ spec:
               port: {{ .Values.containerPort | default 8080 }}
             initialDelaySeconds: {{ .Values.probes.initialLivenessDelay | default 30 }}
           resources:
-            requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+            requests: { cpu: "100m", memory: "256Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
       terminationGracePeriodSeconds: 30
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
