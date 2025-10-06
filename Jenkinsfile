@@ -76,7 +76,7 @@ pipeline {
             TGZ=$(ls -1 *.tgz)
             BASENAME=$(basename "$TGZ")
 
-            curl -v -f -L -u "${USER}:${PASS}" \
+            curl -f -L -u "${USER}:${PASS}" \
               --upload-file "${TGZ}" \
               "${HELM_REPO_URL}${BASENAME}"
           '''

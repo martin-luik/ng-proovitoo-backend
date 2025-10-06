@@ -28,7 +28,7 @@ spec:
           {{`{{- end }}`}}
     spec:
       automountServiceAccountToken: true
-      serviceAccountName: default
+      serviceAccountName: {{ include "ng-backend.fullname" . }}-sa
       containers:
         - name: backend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -59,7 +59,3 @@ spec:
             requests: { cpu: "100m", memory: "256Mi" }
             limits:   { cpu: "500m", memory: "512Mi" }
       terminationGracePeriodSeconds: 30
-      {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
-      {{- end }}
