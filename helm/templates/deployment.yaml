@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ng-events-deployment
-  namespace: ng-events
   labels:
     app: ng-events-backend
 spec:
@@ -16,11 +15,11 @@ spec:
         app: ng-events-backend
       annotations:
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "ng-backend-dev"
-        vault.hashicorp.com/service: "http://host.docker.internal:8200"
-        vault.hashicorp.com/auth-path: "auth/kubernetes"
+        vault.hashicorp.com/role: "{{ .Values.vault.role | default "ng-backend-dev" }}"
+        vault.hashicorp.com/service: "{{ .Values.vault.addr | default "http://host.docker.internal:8200" }}"
+        vault.hashicorp.com/auth-path: "{{ .Values.vault.authPath | default "auth/kubernetes" }}"
         vault.hashicorp.com/agent-pre-populate-only: "true"
-        vault.hashicorp.com/agent-inject-secret-config.properties: "kv/data/ng-events/backend"
+        vault.hashicorp.com/agent-inject-secret-config.properties: "{{ .Values.vault.secretPath | default "kv/data/ng-events/backend" }}"
         vault.hashicorp.com/agent-inject-template-config.properties: |
           {{`{{- with secret "kv/data/ng-events/backend" -}}`}}
           SPRING_DATASOURCE_USERNAME={{`{{ .Data.data.SPRING_DATASOURCE_USERNAME }}`}}

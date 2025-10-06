@@ -1,5 +1,3 @@
-namespace: ng-events
-
 image:
   repository: host.docker.internal:5001/ng-proovitoo-backend
   tag: latest
@@ -12,7 +10,6 @@ containerPort: 8080
 
 envFrom:
   configMapRef: ng-events-backend-config
-  secretRef: ng-events-backend-secrets
 
 service:
   port: 80
@@ -28,4 +25,11 @@ ingress:
   enabled: false          
   ingressClassName: nginx
   host: ""                
-  apiPrefix: /api/?(.*)          
+  apiPrefix: /api/?(.*)
+
+vault:
+  addr: "http://host.docker.internal:8200"
+  authPath: "auth/kubernetes"
+  role: "ng-backend-dev"
+  mode: "prepopulate"
+  secretPath: "kv/data/ng-events/backend"
