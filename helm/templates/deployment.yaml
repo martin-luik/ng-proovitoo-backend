@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ng-events-deployment
+  namespace: {{ .Release.Namespace }}
   labels:
     app: ng-events-backend
 spec:
@@ -35,13 +36,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}
-          {{- if .Values.envFrom.configMapRef }}
           envFrom:
-            {{- if .Values.envFrom.configMapRef }}
             - configMapRef:
-                name: {{ .Values.envFrom.configMapRef }}
-            {{- end }}
-          {{- end }}
+                name: ng-events-backend-config
           env:
             - name: SPRING_CONFIG_IMPORT
               value: "optional:file:/vault/secrets/config.properties"

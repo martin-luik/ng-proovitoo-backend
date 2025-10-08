@@ -33,3 +33,18 @@ vault:
   role: "ng-backend-dev"
   mode: "prepopulate"
   secretPath: "kv/data/ng-events/backend"
+
+config:
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://host.docker.internal:5436/events_db?currentSchema=event_mgmt"
+  SPRING_LIQUIBASE_DEFAULT_SCHEMA: "event_mgmt"
+  SPRING_LIQUIBASE_LIQUIBASE_SCHEMA: "liquibase"
+  SPRING_LIQUIBASE_ENABLED: true
+
+  APP_JWT_ISSUER: "events-app"
+  APP_JWT_EXPIRY_MINUTES: 60
+
+  APP_COOKIES_NAME: "access_token"
+  APP_COOKIES_HTTP_ONLY: true
+  APP_COOKIES_SECURE: false
+  APP_COOKIES_SAME_SITE: "Lax"
+  APP_COOKIES_MAX_AGE_MINUTES: 60
