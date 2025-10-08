@@ -5,7 +5,7 @@ image:
 imagePullSecrets:
   - name: nexus-regcred
 
-replicaCount: 2
+replicaCount: 1
 containerPort: 8080
 
 envFrom:
