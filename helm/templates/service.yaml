@@ -11,5 +11,5 @@ spec:
     app: ng-events-backend
   ports:
     - name: http
-      port: {{ default 80 .Values.service.port }}
-      targetPort: {{ default 8080 .Values.service.targetPort }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ng-events-backend
 spec:
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: ng-events-backend
@@ -15,11 +15,11 @@ spec:
         app: ng-events-backend
       annotations:
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "{{ .Values.vault.role | default "ng-backend-dev" }}"
-        vault.hashicorp.com/service: "{{ .Values.vault.addr | default "http://host.docker.internal:8200" }}"
-        vault.hashicorp.com/auth-path: "{{ .Values.vault.authPath | default "auth/kubernetes" }}"
+        vault.hashicorp.com/role: "{{ .Values.vault.role }}"
+        vault.hashicorp.com/service: "{{ .Values.vault.addr }}"
+        vault.hashicorp.com/auth-path: "{{ .Values.vault.authPath }}"
         vault.hashicorp.com/agent-pre-populate-only: "true"
-        vault.hashicorp.com/agent-inject-secret-config.properties: "{{ .Values.vault.secretPath | default "kv/data/ng-events/backend" }}"
+        vault.hashicorp.com/agent-inject-secret-config.properties: "{{ .Values.vault.secretPath }}"
         vault.hashicorp.com/agent-inject-template-config.properties: |
           {{`{{- with secret "kv/data/ng-events/backend" -}}`}}
           SPRING_DATASOURCE_USERNAME={{`{{ .Data.data.SPRING_DATASOURCE_USERNAME }}`}}
@@ -32,9 +32,9 @@ spec:
       containers:
         - name: backend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.containerPort | default 8080 }}
+            - containerPort: {{ .Values.containerPort }}
           {{- if .Values.envFrom.configMapRef }}
           envFrom:
             {{- if .Values.envFrom.configMapRef }}
@@ -47,14 +47,14 @@ spec:
               value: "optional:file:/vault/secrets/config.properties"
           readinessProbe:
             httpGet:
-              path: {{ .Values.probes.readinessPath | default "/actuator/health" | quote }}
-              port: {{ .Values.containerPort | default 8080 }}
-            initialDelaySeconds: {{ .Values.probes.initialReadinessDelay | default 10 }}
+              path: {{ .Values.probes.readinessPath | quote }}
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.probes.initialReadinessDelay }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.probes.livenessPath | default "/actuator/health" | quote }}
-              port: {{ .Values.containerPort | default 8080 }}
-            initialDelaySeconds: {{ .Values.probes.initialLivenessDelay | default 30 }}
+              path: {{ .Values.probes.livenessPath | quote }}
+              port: {{ .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.probes.initialLivenessDelay }}
           resources:
             requests: { cpu: "100m", memory: "256Mi" }
             limits:   { cpu: "500m", memory: "512Mi" }
