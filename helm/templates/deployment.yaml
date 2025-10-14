@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ng-events-deployment
+  name: ng-events-backend-deployment
   namespace: {{ .Release.Namespace }}
   labels:
     app: ng-events-backend
