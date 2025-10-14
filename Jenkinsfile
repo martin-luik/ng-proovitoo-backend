@@ -98,7 +98,7 @@ pipeline {
     
         REGISTRY_PULL  = "host.docker.internal:5001"
     
-        RELEASE_NAME   = "ng-events"
+        RELEASE_NAME   = "ng-events-backend"
         NAMESPACE      = "ng-events"
       }
       steps {
