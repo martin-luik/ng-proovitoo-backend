@@ -84,6 +84,41 @@ pipeline {
       }
     }
 
+    stage('Publish DB init (E2E ConfigMap)') {
+      agent { docker { image 'host.docker.internal:5001/devops/kubectl-helm:3.19.0' } }
+      environment {
+        NAMESPACE = "ng-events" // või ng-config, kui tahad püsivat “publish” NS-i
+        SQL_PATH  = "src/main/resources/db/changelog/initdb.sql"
+      }
+      steps {
+        withCredentials([file(credentialsId: 'kubeconfig-ng-events', variable: 'KCFG')]) {
+          sh '''#!/usr/bin/env bash
+            set -euo pipefail
+
+            cp "$KCFG" ./kubeconfig
+            chmod 600 ./kubeconfig
+            if grep -q "https://127.0.0.1:6443" ./kubeconfig; then
+              sed -i 's#https://127.0.0.1:6443#https://kubernetes.docker.internal:6443#g' ./kubeconfig
+            fi
+            export KUBECONFIG="$PWD/kubeconfig"
+
+            kubectl version --client
+            kubectl get nodes
+            kubectl cluster-info || true
+
+            kubectl create ns "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+
+            SQL_PATH="src/main/resources/db/changelog/initdb.sql"
+            test -f "${SQL_PATH}" || { echo "missing ${SQL_PATH}"; exit 2; }
+
+            kubectl -n "${NAMESPACE}" create configmap pg-init-src \
+              --from-file=initdb.sql="${SQL_PATH}" \
+              --dry-run=client -o yaml | kubectl apply -f -
+          '''
+        }
+      }
+    }
+
     stage('Deploy (Helm)') {
       agent {
         docker {
