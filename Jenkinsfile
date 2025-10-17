@@ -135,7 +135,6 @@ pipeline {
     
         RELEASE_NAME   = "ng-events-backend"
         NAMESPACE      = "ng-events"
-        HOST           = "backend.127.0.0.1.nip.io"
       }
       steps {
         withCredentials([
@@ -174,7 +173,6 @@ pipeline {
               --namespace "${NAMESPACE}" --create-namespace \
               --set image.repository="${REGISTRY_PULL}/${IMAGE}" \
               --set-string image.tag="${VERSION}" \
-              --set ingress.host="${HOST}" \
               --wait --atomic --timeout 10m --history-max 10
     
             kubectl -n "${NAMESPACE}" get deploy,po,svc
