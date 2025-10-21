@@ -47,12 +47,24 @@ pipeline {
 
     stage('Docker build & push (host)') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'nexus-docker', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-          sh '''
-            docker build -t ${IMAGE}:${VERSION} .
+        withCredentials([
+          usernamePassword(credentialsId: 'nexus-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS'),
+          usernamePassword(credentialsId: 'nexus-maven',  usernameVariable: 'NX_USER',     passwordVariable: 'NX_PASS')
+        ]) {
+          sh '''#!/usr/bin/env bash
+            set -euxo pipefail
+            export DOCKER_BUILDKIT=1
+
+            docker build \
+              --build-arg NEXUS_URL="http://host.docker.internal:8081/repository/maven-public/" \
+              --build-arg NEXUS_USER="$NX_USER" \
+              --build-arg NEXUS_PASS="$NX_PASS" \
+              -t ${IMAGE}:${VERSION} .
+
             docker tag ${IMAGE}:${VERSION} ${REGISTRY}/${IMAGE}:${VERSION}
             docker tag ${IMAGE}:${VERSION} ${REGISTRY}/${IMAGE}:latest
-            echo "$PASS" | docker login ${REGISTRY} -u "$USER" --password-stdin
+
+            echo "$DOCKER_PASS" | docker login ${REGISTRY} -u "$DOCKER_USER" --password-stdin
             docker push ${REGISTRY}/${IMAGE}:${VERSION}
             docker push ${REGISTRY}/${IMAGE}:latest
           '''
