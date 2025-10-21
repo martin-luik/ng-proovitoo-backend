@@ -16,11 +16,26 @@ pipeline {
         }
       }
       environment {
-        GRADLE_USER_HOME = "${WORKSPACE}/.gradle" 
+        GRADLE_USER_HOME = "${WORKSPACE}/.gradle"
+        NEXUS_URL = 'http://host.docker.internal:8081/repository/maven-public/'
       }
       steps {
-        sh 'chmod +x gradlew || true'
-        sh './gradlew --no-daemon clean test bootJar'
+        withCredentials([usernamePassword(
+          credentialsId: 'nexus-maven',
+          usernameVariable: 'NEXUS_USER',
+          passwordVariable: 'NEXUS_PASS'
+        )]) {
+          sh '''#!/usr/bin/env bash
+            set -euxo pipefail
+            chmod +x gradlew || true
+    
+            ./gradlew --no-daemon \
+              -PnexusUser="$NEXUS_USER" \
+              -PnexusPass="$NEXUS_PASS" \
+              -PnexusUrl="$NEXUS_URL" \
+              clean test bootJar
+          '''
+        }
       }
       post {
         always {

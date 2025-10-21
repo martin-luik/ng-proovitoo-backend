@@ -1,1 +1,58 @@
+pluginManagement {
+  repositories {
+    maven {
+
+      def nexusUrl = providers.gradleProperty("nexusUrl")
+                  .orElse(providers.environmentVariable("NEXUS_URL"))
+                  .get()
+      def nxUser = providers.gradleProperty("nexusUser")
+                  .orElse(providers.environmentVariable("NEXUS_USER"))
+                  .orNull
+      def nxPass = providers.gradleProperty("nexusPass")
+                  .orElse(providers.environmentVariable("NEXUS_PASS"))
+                  .orNull
+
+      url = uri(nexusUrl)
+      allowInsecureProtocol = true
+
+      if (nxUser && nxPass) {
+        credentials {
+          username = nxUser
+          password = nxPass
+        }
+      }
+    }
+    gradlePluginPortal()
+  }
+}
+
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+  repositories {
+    maven {
+
+      def nexusUrl = providers.gradleProperty("nexusUrl")
+                  .orElse(providers.environmentVariable("NEXUS_URL"))
+                  .get()
+
+      def nxUser = providers.gradleProperty("nexusUser")
+                  .orElse(providers.environmentVariable("NEXUS_USER"))
+                  .orNull
+      def nxPass = providers.gradleProperty("nexusPass")
+                  .orElse(providers.environmentVariable("NEXUS_PASS"))
+                  .orNull
+
+      url = uri(nexusUrl)
+      allowInsecureProtocol = true
+
+      if (nxUser && nxPass) {
+        credentials {
+          username = nxUser
+          password = nxPass
+        }
+      }
+    }
+  }
+}
+
 rootProject.name = 'events'
